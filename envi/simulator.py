@@ -6,8 +6,9 @@ from core.seeding import get_rng
 from core.problem import CampusProblem
 
 from algorithms.greedy_nearest import GreedyNearestAgent
-from algorithms.ucs import UCSAgent
 from algorithms.bfs import BFSAgent
+from algorithms.dfs import DFSAgent
+from algorithms.astar import AStarAgent
 
 class CampusSimulator:
     def __init__(self, campus_map_path: str = "data/campus_map.json", steps_config_path: str = "data/steps.json", seed: int = 42):
@@ -27,7 +28,7 @@ class CampusSimulator:
         }
 
         self.room_ids = list(self.steps_config.keys())
-        agent_classes = [GreedyNearestAgent, UCSAgent, BFSAgent]
+        agent_classes = [GreedyNearestAgent, DFSAgent, BFSAgent]
 
         self.background_agents = []
         for i in range(20):
@@ -72,10 +73,11 @@ class CampusSimulator:
                 if target in self.counters and self.bg_rng.random() < 0.3:
                     self.counters[target].add_to_queue(bg["id"])
 
-    def run_simulation(self, agent, max_steps: int = 500) -> dict:
+    def run_simulation(self, agent, max_steps: int = 500, congestion: bool = True) -> dict:
         metrics = MetricsTracker()
         state = self.problem.initial_state()
         trace = []
+        background_steps = []
         current_room, completed_steps = state
         step_count = 0
 
@@ -86,9 +88,10 @@ class CampusSimulator:
         while step_count < max_steps:
             step_count += 1
             
-            for counter in self.counters.values():
-                counter.tick(self.rng)            
-            self._update_background_agents()
+            if congestion:
+                for counter in self.counters.values():
+                    counter.tick(self.rng)            
+                self._update_background_agents()
 
             try:
                 action = agent.select_action((current_room, completed_steps), metrics=None)
@@ -114,26 +117,29 @@ class CampusSimulator:
                 current_room = target
 
             elif action_type == "complete":
-                # Check if room has a counter and join queue
-                if target in self.counters:
+                mean_service = float(self.steps_config.get(target, {}).get("mean_service_time", 3.0))
+
+                if congestion and target in self.counters:
                     counter = self.counters[target]
-                    counter.add_to_queue(agent.name)
+                    counter.add_to_queue(getattr(agent, "name", "agent"))
                     
                     queue_list = getattr(counter, 'queue', [])
                     queue_len = len(queue_list) if isinstance(queue_list, list) else 1
-                    mean_service = float(self.steps_config[target].get("mean_service_time", 3.0))
+                    
+                    # Calculate dynamic node crowding from background workers present at target room
+                    room_crowd = sum(1 for bg in self.background_agents if bg["current_room"] == target)
+                    effective_crowd = max(queue_len, 1 + room_crowd)
 
-                    step_wait = max(1, int(queue_len * (mean_service / 2.0)))
+                    step_wait = max(1, int(effective_crowd * (mean_service / 2.0)))
                     
                     step_count += step_wait
                     wait_time += float(step_wait)
                     metrics.add_wait(step_wait)
-                    
-                    completed_steps = frozenset(list(completed_steps) + [target])
 
-                    service_duration = mean_service
-                    service_time += service_duration
-                    metrics.add_service(service_duration)
+                completed_steps = frozenset(list(completed_steps) + [target])
+                service_duration = mean_service
+                service_time += service_duration
+                metrics.add_service(service_duration)
             
             trace.append({
                 "step": step_count,
@@ -142,12 +148,21 @@ class CampusSimulator:
                 "action_taken": [action_type, target]
             })
 
+            if congestion:
+                background_steps.append([
+                    {
+                        "id": bg["id"],
+                        "current_room": bg["current_room"]
+                    }
+                    for bg in self.background_agents
+                ])
+
             if self.problem.goal_test((current_room, completed_steps)):
                 break
 
         total_cost = travel_time + wait_time + service_time
         return {
-            "agent": agent.name,
+            "agent": getattr(agent, "name", "Agent"),
             "total_steps": step_count,
             "metrics": {
                 "travel_time": travel_time,
@@ -155,7 +170,8 @@ class CampusSimulator:
                 "service_time": service_time,
                 "total_cost": total_cost
             },
-            "trace": trace
+            "trace": trace,
+            "background_steps": background_steps if congestion else []
         }
     
     def _compute_shortest_path(self, start: str, goal: str) -> list:

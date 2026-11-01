@@ -14,11 +14,11 @@ class RoomCounter:
         self.busy_counters = [0] * self.num_counters
     
     def queue_length(self) -> int:
-        #this will return number of agent currently in queue
+        #this will return number of agent currently in queue (wait time )
         return len(self.queue)
 
     def add_to_queue(self, agent_id: str):
-        #adds agent to the back of queue
+        #this will add agent to the back of queue (fifo waala logic)
         self.queue.append(agent_id)
 
     def tick(self, rng: np.random.Generator):

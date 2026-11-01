@@ -1,16 +1,16 @@
 {
     "nodes":{
-        "gate": {"cluster": "neutral", "type": "entry"},
-        "lhtc_gate": {"cluster": "academic", "type": "room"},
-        "L-103": {"cluster": "academic", "type": "room"},
-        "L-104": {"cluster": "academic", "type": "room"},
-        "L-105": {"cluster": "academic", "type": "room"},
-        "L-106": {"cluster": "academic", "type": "room"},
-        "L-206": {"cluster": "academic", "type": "room"},
-        "panini_gate": {"cluster": "hostel", "type": "room"},
-        "office": {"cluster": "hostel", "type": "room"},
-        "room": {"cluster": "hostel", "type": "room"},
-        "shop": {"cluster": "hostel", "type": "room"}
+        "gate": {"cluster": "neutral", "type": "entry", "x": 80, "y": 300},
+        "lhtc_gate": {"cluster": "academic", "type": "room", "x": 450, "y": 200},
+        "L-103": {"cluster": "academic", "type": "room", "x": 300, "y": 110},
+        "L-104": {"cluster": "academic", "type": "room", "x": 400, "y": 110},
+        "L-105": {"cluster": "academic", "type": "room", "x": 500, "y": 110},
+        "L-106": {"cluster": "academic", "type": "room", "x": 600, "y": 110},
+        "L-206": {"cluster": "academic", "type": "room", "x": 600, "y": 50},
+        "panini_gate": {"cluster": "hostel", "type": "room", "x": 600, "y": 300},
+        "office": {"cluster": "hostel", "type": "room", "x": 650, "y": 350},
+        "room": {"cluster": "hostel", "type": "room", "x": 700, "y": 400},
+        "shop": {"cluster": "hostel", "type": "room", "x": 500, "y": 400}
     },
     "edges":[
         {"from": "gate", "to": "lhtc_gate", "weight": 15},

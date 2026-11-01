@@ -1,5 +1,5 @@
 import json
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from envi.simulator import CampusSimulator
 from core.problem import CampusProblem
@@ -24,6 +24,51 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# In-memory cache for trained Q-tables by iteration count for fast simulation responses
+_Q_TABLE_CACHE = {}
+
+
+def get_trained_q_agent(problem: CampusProblem, iterations: int = 100) -> QLearningAgent:
+    """Trains or returns cached Q-learning weights for the requested iteration count."""
+    global _Q_TABLE_CACHE
+    agent = QLearningAgent(problem)
+
+    if iterations in _Q_TABLE_CACHE:
+        agent.q_table = dict(_Q_TABLE_CACHE[iterations])
+        agent.epsilon = 0.0 if iterations >= 100 else max(0.05, 1.0 - (iterations / 75.0))
+        agent.name = f"QLearningAgent ({iterations} iter)"
+        return agent
+
+    for _ in range(iterations):
+        state = ("gate", frozenset())
+        done = False
+        step_count = 0
+        while not done and step_count < 200:
+            step_count += 1
+            action = agent.select_action(state)
+            if not action:
+                break
+            action_type, target = action
+            room, completed = state
+            if action_type == "move":
+                next_state = (target, completed)
+                reward = -2.0
+            else:
+                next_state = (room, completed | {target})
+                reward = 50.0
+            done = problem.goal_test(next_state)
+            if done:
+                reward += 100.0
+            agent.update(state, action, reward, next_state, done)
+            state = next_state
+        agent.decay_epsilon()
+
+    _Q_TABLE_CACHE[iterations] = dict(agent.q_table)
+    agent.epsilon = 0.0 if iterations >= 100 else max(0.05, 1.0 - (iterations / 75.0))
+    agent.name = f"QLearningAgent ({iterations} iter)"
+    return agent
+
+
 @app.get("/api/map")
 def get_campus_map():
     """Returns the campus nodes and edges layout from JSON."""
@@ -33,20 +78,33 @@ def get_campus_map():
     except FileNotFoundError:
         return {"error": "campus_map.json not found in data directory."}
 
+
 @app.get("/api/simulate/{agent_type}")
-def run_simulation_api(agent_type: str):
+def run_simulation_api(
+    agent_type: str,
+    congestion: bool = Query(True),
+    iterations: int = Query(100),
+):
     """
     Runs a simulation episode for the specified agent type 
-    and returns the step-by-step trace.
+    and returns the step-by-step trace and metrics.
+    Supports congestion toggle and Q-learning iterations.
     """
     simulator = CampusSimulator("data/campus_map.json", "data/steps.json", seed=42)
     problem = CampusProblem(simulator.graph, steps_config=simulator.steps_config)
 
-    agent_key = agent_type.lower()
+    agent_key = agent_type.lower().strip()
+
+    # Parse iterations if passed in path (e.g. q_learning_50) or use query parameter
+    q_iterations = iterations
+    if agent_key.startswith("q_learning"):
+        parts = agent_key.replace("-", "_").split("_")
+        if len(parts) > 2 and parts[-1].isdigit():
+            q_iterations = int(parts[-1])
+        agent_key = "q_learning"
 
     if agent_key == "q_learning":
-        agent = QLearningAgent(problem)
-        # in full pipeline we have to load pre-trained Q-weights here
+        agent = get_trained_q_agent(problem, iterations=q_iterations)
     elif agent_key == "a_star":
         agent = AStarAgent(problem)
     elif agent_key == "ucs":
@@ -64,69 +122,8 @@ def run_simulation_api(agent_type: str):
     elif agent_key == "ids":
         agent = IDSAgent(problem)
     else:
-        return {"error": f"Agent type '{agent_type}' not supported yet. Choose from q_learning, a_star, ucs, value_iteration, simulated_annealing."}
+        return {
+            "error": f"Agent type '{agent_type}' not supported yet. Choose from a_star, bfs, dfs, greedy_nearest, ids, simulated_annealing, q_learning, value_iteration, ucs."
+        }
 
-    return simulator.run_simulation(agent, max_steps=500)
-
-    # OLD MANUAL LOOP
-    # state = problem.initial_state()
-    # trace = []
-    # current_room ,completed_steps = state
-    # step_count = 0
-    # max_steps = 100
-
-    # travel_time = 0.0
-    # wait_time = 0.0
-    # service_time = 0.0
-
-    # while step_count < max_steps:
-    #     step_count += 1
-
-    #     try:
-    #         action = agent.select_action((current_room, completed_steps),metrics=None)
-    #     except TypeError:
-    #         try:
-    #             action = agent.select_action((current_room, completed_steps))
-    #         except Exception:
-    #             action = None
-    #     if not action:
-    #         legal_actions = problem.actions((current_room, completed_steps))
-    #         if legal_actions:
-    #             action = legal_actions[0]
-    #         else:
-    #             break
-
-    #     action_type, target = action
-    #     if action_type == "move":
-    #         neighbors = problem.graph.get_neighbors(current_room)
-    #         weight = neighbors.get(target, 1.0)
-    #         travel_time += float(weight)
-    #         current_room = target
-    #     else:
-    #         wait_time += 1.0
-    #         service = float(problem.steps_config.get(target, {}).get("mean_service_time", 3.0))
-    #         service_time += service
-    #         completed_steps = frozenset(list(completed_steps) + [target])
-
-    #     trace.append({
-    #         "step": step_count,
-    #         "current_room": current_room,
-    #         "completed_steps": list(completed_steps),
-    #         "action_taken": [action_type, target]
-    #     })
-
-    #     if problem.goal_test((current_room, completed_steps)):
-    #         break
-    
-    # total_cost = travel_time + wait_time + service_time
-    # return {
-    #     "agent": agent_type,
-    #     "total_steps": step_count,
-    #     "metrics": {
-    #         "travel_time": travel_time,
-    #         "wait_time": wait_time,
-    #         "service_time": service_time,
-    #         "total_cost": total_cost
-    #     },
-    #     "trace": trace
-    # }
+    return simulator.run_simulation(agent, max_steps=500, congestion=congestion)
