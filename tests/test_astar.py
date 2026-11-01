@@ -9,8 +9,8 @@ if ROOT not in sys.path:
 
 from algorithms.astar import AStarAgent, astar_search, action_cost
 from algorithms.heuristics import (ClusterAwareHeuristic,
-                                   FarthestRemainingRoomHeuristic,
-                                   zero_heuristic)
+                                FarthestRemainingRoomHeuristic,
+                                zero_heuristic)
 from algorithms.ucs import UCSAgent, ucs_search
 from core.metrics import MetricsTracker
 from core.problem import CampusProblem
@@ -58,7 +58,7 @@ def _replay(problem, plan):
         travel, service = action_cost(problem, state, action)
         nxt = problem.result(state, action)
         cost = problem.path_cost(cost, state, action, nxt,
-                                 travel_time=travel, service_time=service)
+                                travel_time=travel, service_time=service)
         state = nxt
     return state, cost
 
@@ -125,8 +125,8 @@ def test_heuristics_are_consistent_and_zero_at_goal():
     implies admissibility (see docs/algorithms/astar.md)."""
     problem = _campus_problem()
     heuristics = [zero_heuristic,
-                  FarthestRemainingRoomHeuristic(problem),
-                  ClusterAwareHeuristic(problem)]
+                FarthestRemainingRoomHeuristic(problem),
+                ClusterAwareHeuristic(problem)]
     for h in heuristics:
         for s, a, n, c in _all_transitions(problem):
             assert h(s) <= c + h(n) + 1e-9, (s, a)
@@ -158,7 +158,7 @@ def test_agents_execute_plan_and_log_expansions():
             travel, service = action_cost(problem, state, action)
             nxt = problem.result(state, action)
             cost = problem.path_cost(cost, state, action, nxt,
-                                     travel_time=travel, service_time=service)
+                                    travel_time=travel, service_time=service)
             state = nxt
         assert problem.goal_test(state)
         assert cost == ucs_search(problem).cost
