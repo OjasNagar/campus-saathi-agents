@@ -5,6 +5,10 @@ from envi.simulator import CampusSimulator
 from core.problem import CampusProblem
 
 from agents.q_learning_agent import QLearningAgent
+from algorithms.bfs import BFSAgent
+from algorithms.dfs import DFSAgent
+from algorithms.greedy_nearest import GreedyNearestAgent
+from algorithms.ids import IDSAgent
 from algorithms.astar import AStarAgent
 from algorithms.ucs import UCSAgent
 from algorithms.value_iteration import ValueIterationAgent
@@ -51,67 +55,78 @@ def run_simulation_api(agent_type: str):
         agent = ValueIterationAgent(problem)
     elif agent_key == "simulated_annealing":
         agent = SimulatedAnnealingAgent(problem)
+    elif agent_key == "bfs":
+        agent = BFSAgent(problem)
+    elif agent_key == "dfs":
+        agent = DFSAgent(problem)
+    elif agent_key == "greedy_nearest":
+        agent = GreedyNearestAgent(problem)
+    elif agent_key == "ids":
+        agent = IDSAgent(problem)
     else:
         return {"error": f"Agent type '{agent_type}' not supported yet. Choose from q_learning, a_star, ucs, value_iteration, simulated_annealing."}
 
-    state = problem.initial_state()
-    trace = []
-    current_room ,completed_steps = state
-    step_count = 0
-    max_steps = 100
+    return simulator.run_simulation(agent, max_steps=500)
 
-    travel_time = 0.0
-    wait_time = 0.0
-    service_time = 0.0
+    # OLD MANUAL LOOP
+    # state = problem.initial_state()
+    # trace = []
+    # current_room ,completed_steps = state
+    # step_count = 0
+    # max_steps = 100
 
-    while step_count < max_steps:
-        step_count += 1
+    # travel_time = 0.0
+    # wait_time = 0.0
+    # service_time = 0.0
 
-        try:
-            action = agent.select_action((current_room, completed_steps),metrics=None)
-        except TypeError:
-            try:
-                action = agent.select_action((current_room, completed_steps))
-            except Exception:
-                action = None
-        if not action:
-            legal_actions = problem.actions((current_room, completed_steps))
-            if legal_actions:
-                action = legal_actions[0]
-            else:
-                break
+    # while step_count < max_steps:
+    #     step_count += 1
 
-        action_type, target = action
-        if action_type == "move":
-            neighbors = problem.graph.get_neighbors(current_room)
-            weight = neighbors.get(target, 1.0)
-            travel_time += float(weight)
-            current_room = target
-        else:
-            wait_time += 1.0
-            service = float(problem.steps_config.get(target, {}).get("mean_service_time", 3.0))
-            service_time += service
-            completed_steps = frozenset(list(completed_steps) + [target])
+    #     try:
+    #         action = agent.select_action((current_room, completed_steps),metrics=None)
+    #     except TypeError:
+    #         try:
+    #             action = agent.select_action((current_room, completed_steps))
+    #         except Exception:
+    #             action = None
+    #     if not action:
+    #         legal_actions = problem.actions((current_room, completed_steps))
+    #         if legal_actions:
+    #             action = legal_actions[0]
+    #         else:
+    #             break
 
-        trace.append({
-            "step": step_count,
-            "current_room": current_room,
-            "completed_steps": list(completed_steps),
-            "action_taken": [action_type, target]
-        })
+    #     action_type, target = action
+    #     if action_type == "move":
+    #         neighbors = problem.graph.get_neighbors(current_room)
+    #         weight = neighbors.get(target, 1.0)
+    #         travel_time += float(weight)
+    #         current_room = target
+    #     else:
+    #         wait_time += 1.0
+    #         service = float(problem.steps_config.get(target, {}).get("mean_service_time", 3.0))
+    #         service_time += service
+    #         completed_steps = frozenset(list(completed_steps) + [target])
 
-        if problem.goal_test((current_room, completed_steps)):
-            break
+    #     trace.append({
+    #         "step": step_count,
+    #         "current_room": current_room,
+    #         "completed_steps": list(completed_steps),
+    #         "action_taken": [action_type, target]
+    #     })
+
+    #     if problem.goal_test((current_room, completed_steps)):
+    #         break
     
-    total_cost = travel_time + wait_time + service_time
-    return {
-        "agent": agent_type,
-        "total_steps": step_count,
-        "metrics": {
-            "travel_time": travel_time,
-            "wait_time": wait_time,
-            "service_time": service_time,
-            "total_cost": total_cost
-        },
-        "trace": trace
-    }
+    # total_cost = travel_time + wait_time + service_time
+    # return {
+    #     "agent": agent_type,
+    #     "total_steps": step_count,
+    #     "metrics": {
+    #         "travel_time": travel_time,
+    #         "wait_time": wait_time,
+    #         "service_time": service_time,
+    #         "total_cost": total_cost
+    #     },
+    #     "trace": trace
+    # }
