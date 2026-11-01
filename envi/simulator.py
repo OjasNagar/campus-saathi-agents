@@ -18,6 +18,43 @@ class CampusSimulator:
             for room_id in self.steps_config.keys()
         }
 
+        self.room_ids = list(self.steps_config.keys())
+        self.background_agents = []
+        for i in range(20):
+            start_room = self.rng.choice(self.room_ids)
+            self.background_agents.append({
+                "id": f"student_{i+1}",
+                "current_room": start_room,
+                "destination": None,
+                "travel_ticks_remaining": 0,
+                "state": "idle" # idle, traveling, queuing
+            })
+    
+    def _update_background_agents(self):
+        """Advances background student agents by 1 tick to create realistic congestion."""
+        for agent in self.background_agents:
+            if agent["travel_ticks_remaining"] > 0:
+                agent["travel_ticks_remaining"] -= 1
+                if agent["travel_ticks_remaining"] == 0:
+                    agent["current_room"] = agent["destination"]
+                    agent["destination"] = None
+                    agent["state"] = "idle"
+                continue
+
+            if agent["state"] == "idle":
+                # Pick a random neighboring room to visit
+                neighbors = self.graph.get_neighbors(agent["current_room"])
+                if neighbors:
+                    target = self.rng.choice(list(neighbors.keys()))
+                    weight = neighbors[target]
+                    agent["destination"] = target
+                    agent["travel_ticks_remaining"] = max(1, int(weight) - 1)
+                    agent["state"] = "traveling"
+                    
+                    # If the room has a counter, randomly decide to queue up
+                    if target in self.counters and self.rng.random() < 0.4:
+                        self.counters[target].add_to_queue(agent["id"])
+
     def run_simulation(self, agent, max_steps: int = 500) -> dict:
         metrics = MetricsTracker()
         state = ("gate", frozenset())  # (current_room, completed_steps)
