@@ -24,12 +24,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# In-memory cache for trained Q-tables by iteration count for fast simulation responses
 _Q_TABLE_CACHE = {}
 
 
 def get_trained_q_agent(problem: CampusProblem, iterations: int = 100) -> QLearningAgent:
-    """Trains or returns cached Q-learning weights for the requested iteration count."""
     global _Q_TABLE_CACHE
     agent = QLearningAgent(problem)
 
@@ -84,19 +82,30 @@ def run_simulation_api(
     agent_type: str,
     congestion: bool = Query(True),
     iterations: int = Query(100),
+    start_location: str = Query("gate"),
+    completed_steps: list[str] = Query(None),
 ):
     """
     Runs a simulation episode for the specified agent type 
     and returns the step-by-step trace and metrics.
-    Supports congestion toggle and Q-learning iterations.
+    Supports congestion toggle, Q-learning iterations, custom starting location, and completed steps.
     """
     simulator = CampusSimulator("data/campus_map.json", "data/steps.json", seed=42)
-    problem = CampusProblem(simulator.graph, steps_config=simulator.steps_config)
+
+    is_congestion = congestion if isinstance(congestion, bool) else True
+    q_iterations = iterations if isinstance(iterations, int) else 100
+    start_room = start_location if isinstance(start_location, str) and start_location in simulator.graph.nodes else "gate"
+    valid_completed = completed_steps if isinstance(completed_steps, (list, set, tuple, frozenset)) else None
+    completed_fs = frozenset(valid_completed) if valid_completed else frozenset()
+
+    problem = CampusProblem(simulator.graph, steps_config=simulator.steps_config, start_room=start_room)
+    if valid_completed:
+        problem.initial_state = lambda: (start_room, completed_fs)
+    simulator.problem = problem
 
     agent_key = agent_type.lower().strip()
 
-    # Parse iterations if passed in path (e.g. q_learning_50) or use query parameter
-    q_iterations = iterations
+    q_iterations = iterations if isinstance(iterations, int) else 100
     if agent_key.startswith("q_learning"):
         parts = agent_key.replace("-", "_").split("_")
         if len(parts) > 2 and parts[-1].isdigit():
@@ -126,4 +135,36 @@ def run_simulation_api(
             "error": f"Agent type '{agent_type}' not supported yet. Choose from a_star, bfs, dfs, greedy_nearest, ids, simulated_annealing, q_learning, value_iteration, ucs."
         }
 
-    return simulator.run_simulation(agent, max_steps=500, congestion=congestion)
+    return simulator.run_simulation(
+        agent,
+        max_steps=500,
+        congestion=is_congestion,
+        start_room=start_room,
+        completed_steps=completed_fs
+    )
+
+
+from pydantic import BaseModel
+from backend.groq_service import query_campus_helper
+
+
+class ChatRequest(BaseModel):
+    query: str
+
+
+@app.post("/api/chat")
+def chat_campus_helper(request: ChatRequest):
+    def simulation_callback(agent_type: str, congestion: bool = True, start_location: str = "gate", completed_steps: list = None):
+        return run_simulation_api(
+            agent_type=agent_type,
+            congestion=congestion,
+            iterations=100,
+            start_location=start_location,
+            completed_steps=completed_steps,
+        )
+
+    try:
+        reply = query_campus_helper(request.query, simulation_callback)
+        return {"response": reply}
+    except Exception as e:
+        return {"response": f"Error communicating with AI assistant: {str(e)}"}

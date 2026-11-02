@@ -73,9 +73,14 @@ class CampusSimulator:
                 if target in self.counters and self.bg_rng.random() < 0.3:
                     self.counters[target].add_to_queue(bg["id"])
 
-    def run_simulation(self, agent, max_steps: int = 500, congestion: bool = True) -> dict:
+    def run_simulation(self, agent, max_steps: int = 500, congestion: bool = True, start_room: str = None, completed_steps: frozenset = None) -> dict:
         metrics = MetricsTracker()
-        state = self.problem.initial_state()
+        if start_room is not None or completed_steps is not None:
+            init_room = start_room if start_room is not None else self.problem.start_room
+            init_completed = completed_steps if completed_steps is not None else frozenset()
+            state = (init_room, frozenset(init_completed))
+        else:
+            state = self.problem.initial_state()
         trace = []
         background_steps = []
         current_room, completed_steps = state
