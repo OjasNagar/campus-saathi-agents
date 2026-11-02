@@ -20,7 +20,6 @@ export default function CampusMap({
   const trace = simulationResult?.trace || [];
   const backgroundAgentsSteps = simulationResult?.background_steps || [];
 
-  //Reset to 0 whenever a new simulation result arrives
   useEffect(() => {
     setCurrentStepIndex(0);
   }, [simulationResult]);
@@ -47,7 +46,6 @@ export default function CampusMap({
   const currentNode = mapData.nodes[currentNodeName];
   const currentBgAgents = showBackground ? (backgroundAgentsSteps[currentStepIndex] || []) : [];
 
-  //Set of completed steps up to this animation step
   const completedSteps = new Set(currentStep?.completed_steps || []);
 
   const traversedEdges = new Set();
@@ -73,10 +71,8 @@ export default function CampusMap({
 
   return (
     <div className="bg-[#0e1726]/90 backdrop-blur-xl p-6 rounded-2xl border border-slate-800/80 shadow-2xl relative overflow-hidden">
-      {/* Glow highlight in corner */}
       <div className="absolute -top-24 -left-24 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/**/}
       <div className="flex flex-wrap justify-between items-center mb-4 gap-3">
         <div>
           <div className="flex items-center gap-2">
@@ -90,7 +86,6 @@ export default function CampusMap({
           </p>
         </div>
 
-        {/* Status badges */}
         <div className="flex items-center gap-2.5 text-xs font-mono">
           <div className="bg-[#0b121e] px-3 py-1.5 rounded-lg border border-slate-800 text-slate-300 flex items-center gap-1.5 shadow-inner">
             <span className="text-slate-400">Active Agents:</span>
@@ -110,9 +105,7 @@ export default function CampusMap({
         </div>
       </div>
 
-      {/* SVG Canvas with Legend Overlay */}
       <div className="relative rounded-xl border border-slate-800 bg-[#080d1a] overflow-hidden shadow-inner flex justify-center items-center">
-        {/**/}
         <div
           className="absolute inset-0 pointer-events-none opacity-[0.07]"
           style={{
@@ -121,13 +114,11 @@ export default function CampusMap({
           }}
         />
 
-        {/**/}
         <div className="absolute top-4 left-4 z-10 flex flex-col items-center bg-[#0e1726]/80 px-2 py-1 rounded border border-slate-800 text-[10px] font-mono text-slate-400 shadow">
           <span className="text-cyan-400 font-bold">N</span>
           <span className="text-slate-500">▲</span>
         </div>
 
-        {/* Graph Legend*/}
         <div className="absolute top-14 left-4 z-10 bg-[#0c1322]/90 backdrop-blur-md px-3 py-2.5 rounded-xl border border-slate-800/80 text-[11px] font-medium shadow-xl max-w-[170px]">
           <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-1.5 border-b border-slate-800 pb-1 font-mono">
             Graph Legend
@@ -173,7 +164,6 @@ export default function CampusMap({
             </linearGradient>
           </defs>
 
-          {/* 1. Base Roadway Edges*/}
           {mapData.edges && mapData.edges.map((edge, idx) => {
             const u = mapData.nodes[edge.from];
             const v = mapData.nodes[edge.to];
@@ -192,7 +182,6 @@ export default function CampusMap({
             );
           })}
 
-          {/*this will highlight the traversed path of agent*/}
           {mapData.edges && mapData.edges.map((edge, idx) => {
             const u = mapData.nodes[edge.from];
             const v = mapData.nodes[edge.to];
@@ -206,7 +195,6 @@ export default function CampusMap({
 
             return (
               <g key={`highlight-edge-${idx}`}>
-                {/*Outer Glow*/}
                 <line
                   x1={u.x}
                   y1={u.y}
@@ -218,7 +206,6 @@ export default function CampusMap({
                   strokeLinecap="round"
                   filter="url(#cyanGlow)"
                 />
-                {/*Sharp Core*/}
                 <line
                   x1={u.x}
                   y1={u.y}
@@ -232,12 +219,10 @@ export default function CampusMap({
             );
           })}
 
-          {/*Node Markers and Labels*/}
           {mapData.nodes && Object.entries(mapData.nodes).map(([id, pos]) => {
             const isCompleted = completedSteps.has(id);
             const isCurrent = currentNodeName === id;
 
-            // Determine node coloring
             let fill = '#334155';
             let stroke = '#475569';
             let strokeWidth = '2';
@@ -249,7 +234,7 @@ export default function CampusMap({
               strokeWidth = '3';
               r = 8;
             } else if (isCompleted) {
-              fill = '#10b981'; // Emerald for completed steps
+              fill = '#10b981';
               stroke = '#6ee7b7';
               strokeWidth = '2';
               r = 7;
@@ -257,7 +242,6 @@ export default function CampusMap({
 
             return (
               <g key={`node-${id}`} className="transition-all duration-300">
-                {/* Node circle */}
                 <circle
                   cx={pos.x}
                   cy={pos.y}
@@ -268,7 +252,6 @@ export default function CampusMap({
                   className="transition-all duration-300"
                 />
 
-                {}
                 <text
                   x={pos.x}
                   y={pos.y - 12}
@@ -284,11 +267,9 @@ export default function CampusMap({
             );
           })}
 
-          {/*Background Workers*/}
           {showBackground && currentBgAgents.map((bgAgent, idx) => {
             const bgNode = mapData.nodes[bgAgent.current_room];
             if (!bgNode) return null;
-            // Jitter position neatly around node
             const offsetX = (idx % 4 - 1.5) * 6;
             const offsetY = (Math.floor(idx / 4) - 1.5) * 6;
 
@@ -308,10 +289,8 @@ export default function CampusMap({
             );
           })}
 
-          {/*Main Agent Pulsing Red Marker*/}
           {currentNode && (
             <g>
-              {/* Outer Pulse Ripple */}
               <circle
                 cx={currentNode.x}
                 cy={currentNode.y}
@@ -321,7 +300,6 @@ export default function CampusMap({
                 className="animate-ping"
                 style={{ transformOrigin: `${currentNode.x}px ${currentNode.y}px`, animationDuration: '1.6s' }}
               />
-              {/* Glowing Red Center */}
               <circle
                 cx={currentNode.x}
                 cy={currentNode.y}
@@ -336,7 +314,6 @@ export default function CampusMap({
         </svg>
       </div>
 
-      {/*Playback step progress bar*/}
       <div className="mt-4 flex items-center justify-between text-xs text-slate-400 font-mono">
         <div className="flex items-center gap-2">
           <span>Step Progress:</span>
@@ -347,9 +324,8 @@ export default function CampusMap({
           <span>{trace.length}</span>
         </div>
 
-        {/*Action Taken chip*/}
         {currentStep && (
-          <div className="bg-[#0b121e] px-2.5 py-1 rounded border border-slate-800 text-[11px]">
+          <div className="bg-[#0b1222] px-2.5 py-1 rounded border border-slate-800 text-[11px]">
             Action:{' '}
             <span className="text-cyan-300 font-bold">
               {currentStep.action_taken ? `${currentStep.action_taken[0]} → ${currentStep.action_taken[1]}` : 'idle'}
