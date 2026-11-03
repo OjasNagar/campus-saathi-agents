@@ -1,0 +1,237 @@
+{
+  "version": "v1",
+  "status": "draft",
+  "options": {
+    "categories": [
+      "OPEN",
+      "OBC-NCL",
+      "EWS",
+      "SC",
+      "ST"
+    ],
+    "admission_routes": [
+      "JoSAA",
+      "CSAB",
+      "DASA"
+    ],
+    "home_state": "Madhya Pradesh"
+  },
+  "documents": [
+    {
+      "id": "allotment_letter",
+      "title": "Seat allotment letter",
+      "group": "Admission",
+      "when": {},
+      "original": true,
+      "copies": 2,
+      "where_to_get": "Download from the counselling portal after seat acceptance. Print it in colour before you travel.",
+      "source_url": "https://josaa.nic.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "fee_receipt",
+      "title": "Seat acceptance fee receipt",
+      "group": "Admission",
+      "when": {},
+      "original": true,
+      "copies": 2,
+      "where_to_get": "Download from the counselling portal after paying the seat acceptance fee.",
+      "source_url": "https://josaa.nic.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "csab_migration",
+      "title": "Migration certificate",
+      "group": "Admission",
+      "when": {
+        "admission_route": [
+          "CSAB"
+        ]
+      },
+      "original": true,
+      "copies": 1,
+      "where_to_get": "Issued by the board or institute you studied at last. Ask the school office early, it can take days.",
+      "source_url": "https://csab.nic.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "dasa_documents",
+      "title": "DASA or ICCR admission documents",
+      "group": "Admission",
+      "when": {
+        "admission_route": [
+          "DASA"
+        ]
+      },
+      "original": true,
+      "copies": 2,
+      "where_to_get": "Use the admission letter issued through the DASA portal.",
+      "source_url": "https://dasanit.org",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "class10",
+      "title": "Class 10 marksheet and certificate",
+      "group": "Academic",
+      "when": {},
+      "original": true,
+      "copies": 2,
+      "where_to_get": "Your school or board. If lost, request a duplicate from the board.",
+      "source_url": "https://www.iiitdmj.ac.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "class12",
+      "title": "Class 12 marksheet and passing certificate",
+      "group": "Academic",
+      "when": {},
+      "original": true,
+      "copies": 2,
+      "where_to_get": "Your school or board. Digital copies from DigiLocker are accepted for reference only.",
+      "source_url": "https://www.digilocker.gov.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "photos",
+      "title": "Passport-size photographs",
+      "group": "Identity",
+      "when": {},
+      "original": false,
+      "copies": 8,
+      "where_to_get": "Any studio. Recent, plain light background. Write your name on the back of each.",
+      "source_url": "https://www.iiitdmj.ac.in",
+      "last_verified": "2026-11-03",
+      "copy_unit": "passport photos"
+    },
+    {
+      "id": "id_proof",
+      "title": "Government photo ID",
+      "group": "Identity",
+      "when": {},
+      "original": true,
+      "copies": 2,
+      "where_to_get": "Carry the original card. Photocopy the front and back only. Never write the ID number on any form you hand out.",
+      "source_url": "https://www.iiitdmj.ac.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "obc_certificate",
+      "title": "OBC-NCL certificate",
+      "group": "Category",
+      "when": {
+        "category": [
+          "OBC-NCL"
+        ]
+      },
+      "original": true,
+      "copies": 2,
+      "valid_note": "Must be issued on or after 1 April 2026.",
+      "where_to_get": "Tehsil or district e-Services portal of your home state.",
+      "source_url": "https://josaa.nic.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "ews_certificate",
+      "title": "EWS certificate",
+      "group": "Category",
+      "when": {
+        "category": [
+          "EWS"
+        ]
+      },
+      "original": true,
+      "copies": 2,
+      "valid_note": "Must be issued on or after 1 April 2026.",
+      "where_to_get": "Tehsil or district e-Services portal of your home state.",
+      "source_url": "https://josaa.nic.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "caste_certificate",
+      "title": "SC or ST caste certificate",
+      "group": "Category",
+      "when": {
+        "category": [
+          "SC",
+          "ST"
+        ]
+      },
+      "original": true,
+      "copies": 2,
+      "where_to_get": "Tehsil or district e-Services portal of your home state.",
+      "source_url": "https://josaa.nic.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "domicile",
+      "title": "Domicile certificate",
+      "group": "Category",
+      "when": {
+        "category": [
+          "OBC-NCL",
+          "EWS",
+          "SC",
+          "ST"
+        ],
+        "not_home_state": true
+      },
+      "original": true,
+      "copies": 1,
+      "where_to_get": "District office of your home state.",
+      "source_url": "https://josaa.nic.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "pwd_certificate",
+      "title": "Disability certificate",
+      "group": "Category",
+      "when": {
+        "pwd": [
+          true
+        ]
+      },
+      "original": true,
+      "copies": 2,
+      "where_to_get": "Issued by a government medical board. Bring the latest one.",
+      "source_url": "https://josaa.nic.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "medical_fitness",
+      "title": "Medical fitness certificate",
+      "group": "Medical",
+      "when": {},
+      "original": true,
+      "copies": 1,
+      "where_to_get": "A registered doctor. Use the institute format and get it signed and stamped.",
+      "source_url": "https://www.iiitdmj.ac.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "antiragging",
+      "title": "Anti-ragging affidavit",
+      "group": "Declarations",
+      "when": {},
+      "original": true,
+      "copies": 1,
+      "where_to_get": "Fill in the online form, print it, and sign. A parent signs the parent section too.",
+      "source_url": "https://www.antiragging.in",
+      "last_verified": "2026-11-03"
+    },
+    {
+      "id": "hostel_form",
+      "title": "Hostel accommodation form",
+      "group": "Hostel",
+      "when": {
+        "hostel_required": [
+          true
+        ]
+      },
+      "original": true,
+      "copies": 1,
+      "where_to_get": "Download the form from the institute site, fill it in, and hand it to the warden's office.",
+      "source_url": "https://www.iiitdmj.ac.in",
+      "last_verified": "2026-11-03"
+    }
+  ]
+}
