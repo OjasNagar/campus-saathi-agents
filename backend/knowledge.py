@@ -5,8 +5,8 @@ from typing import Any, Optional, Sequence
 
 from pydantic import BaseModel, Field
 from rank_bm25 import BM25Okapi
-
-from backend.config import KNOWLEDGE_DIR
+import logging
+from backend.config import KNOWLEDGE_DIR, MIN_SCORE
 from backend.knowledge_schema import (
     Club,
     Contact,
@@ -59,28 +59,35 @@ def normalize_bm25_score(raw_score: float, k: float = BM25_SATURATION_K) -> floa
 
 
 def build_searchable_text(record: KnowledgeRecord) -> str:
+    """Extract all text fields and aliases from a validated knowledge record."""
     parts: list[str] = list(record.aliases)
 
-    if isinstance(record, Contact):
-        parts.extend(
-            filter(None, [record.name, record.office, record.location_text, record.hours])
-        )
-    elif isinstance(record, Club):
-        parts.extend([record.name, record.category, record.description, record.how_to_join])
-    elif isinstance(record, FaqEntry):
-        parts.extend([record.question, record.answer, record.category, *record.required_documents])
-    elif isinstance(record, OfficialLink):
-        parts.extend([record.key, record.label, record.description])
+    # Collect all standard string fields across any knowledge record model
+    for field_name in [
+        "name", "office", "location_text", "hours",
+        "category", "description", "how_to_join",
+        "question", "answer", "key", "label", "url"
+    ]:
+        val = getattr(record, field_name, None)
+        if isinstance(val, str) and val.strip():
+            parts.append(val)
+
+    if hasattr(record, "required_documents") and isinstance(record.required_documents, list):
+        parts.extend([str(doc) for doc in record.required_documents if doc])
 
     return " ".join(parts)
 
+logger = logging.getLogger(__name__)
 
 class SearchResult(BaseModel):
     record: Any
     score: float = Field(ge=0.0, le=1.0)
     record_type: str
 
-
+class RetrievalResult(BaseModel):
+    matches: list[SearchResult]
+    top_score: float
+    has_match: bool
 class KnowledgeBase:
 
     def __init__(self, knowledge_dir: Path = KNOWLEDGE_DIR) -> None:
@@ -164,3 +171,31 @@ class KnowledgeBase:
 
         results.sort(key=lambda r: r.score, reverse=True)
         return results[:k]
+
+    def retrieve(
+        self,
+        query: str,
+        k: int = 3,
+        types: Optional[Sequence[str]] = None,
+        min_score: float = MIN_SCORE,
+    ) -> RetrievalResult:
+        raw_results = self.search(query, k=k, types=types)
+        top_score = raw_results[0].score if raw_results else 0.0
+        
+        filtered_matches = [r for r in raw_results if r.score >= min_score]
+        has_match = len(filtered_matches) > 0
+
+        logger.info(
+            "Retrieval Decision | Query: '%s' | Top Score: %.4f | Threshold: %.4f | Has Match: %s | Matches Retained: %d",
+            query,
+            top_score,
+            min_score,
+            has_match,
+            len(filtered_matches),
+        )
+
+        return RetrievalResult(
+            matches=filtered_matches,
+            top_score=top_score,
+            has_match=has_match,
+        )

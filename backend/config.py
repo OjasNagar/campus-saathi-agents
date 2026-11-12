@@ -11,3 +11,5 @@ DATA_DIR = BASE_DIR / "data"
 KNOWLEDGE_DIR = DATA_DIR / "knowledge"
 
 GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+
+MIN_SCORE = float(os.getenv("KB_MIN_SCORE", "0.20"))
