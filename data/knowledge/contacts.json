@@ -1,6 +1,6 @@
 [
   {
-    "id": "contact_counselor_cultural",
+    "id": "koushikdutta@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Cultural Council counselor",
@@ -18,7 +18,7 @@
     "hours": null
   },
   {
-    "id": "contact_counselor_st",
+    "id": "amitv@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Science and Technology Council counselor",
@@ -37,7 +37,7 @@
     "hours": null
   },
   {
-    "id": "contact_counselor_sports",
+    "id": "dip.samajdar@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Sports Council counselor",
@@ -55,7 +55,7 @@
     "hours": null
   },
   {
-    "id": "contact_faculty_gymnasium",
+    "id": "nihar@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "gym faculty coordinator",
@@ -72,7 +72,7 @@
     "hours": null
   },
   {
-    "id": "contact_faculty_kabaddi",
+    "id": "avish.p@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "kabaddi faculty coordinator",
@@ -89,7 +89,7 @@
     "hours": null
   },
   {
-    "id": "contact_faculty_yoga",
+    "id": "shivdayal@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "yoga faculty coordinator",
@@ -106,7 +106,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_aavartan",
+    "id": "aavartan@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Aavartan - The Dance Club"
@@ -122,7 +122,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_shutterbox",
+    "id": "shutterbox@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Shutterbox"
@@ -138,7 +138,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_jazbaat",
+    "id": "jazbaat@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Jazbaat - The Dramatics Society Club"
@@ -154,7 +154,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_saaz",
+    "id": "saaz@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Saaz - The Music Club"
@@ -170,7 +170,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_samvaad",
+    "id": "samvaad@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Samvaad - The Literature & Quizzing Society Club"
@@ -186,7 +186,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_astronomy_physics",
+    "id": "astronomy@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Astronomy & Physics Society Club"
@@ -202,7 +202,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_aero_fabrication",
+    "id": "afc@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Aero Fabrication Club"
@@ -218,7 +218,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_business_management",
+    "id": "bmc@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Business and Management Club"
@@ -234,7 +234,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_cad_3d_printing",
+    "id": "cadclub@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "CAD and 3D Printing Club"
@@ -250,7 +250,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_racing",
+    "id": "racing@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "IIITDMJ Racing Club"
@@ -266,7 +266,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_programming",
+    "id": "theprogclub@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "The Programming Club"
@@ -282,7 +282,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_electronics_robotics",
+    "id": "ers@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Electronics and Robotics Society"
@@ -298,7 +298,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_athletics",
+    "id": "athletic@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Athletics"
@@ -309,12 +309,12 @@
     "name": "Athletics (club email)",
     "office": "Sports Council, Gymkhana",
     "phone": null,
-    "email": "athleticclub@iiitdmj.ac.in",
+    "email": "athletic@iiitdmj.ac.in",
     "location_text": "Not listed on the official clubs page; contact by email.",
     "hours": null
   },
   {
-    "id": "contact_club_badminton",
+    "id": "badminton@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Badminton"
@@ -325,12 +325,12 @@
     "name": "Badminton (club email)",
     "office": "Sports Council, Gymkhana",
     "phone": null,
-    "email": "badmintonclub@iiitdmj.ac.in",
+    "email": "badminton@iiitdmj.ac.in",
     "location_text": "Not listed on the official clubs page; contact by email.",
     "hours": null
   },
   {
-    "id": "contact_club_basketball",
+    "id": "basketball@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Basketball"
@@ -341,12 +341,12 @@
     "name": "Basketball (club email)",
     "office": "Sports Council, Gymkhana",
     "phone": null,
-    "email": "basketballclub@iiitdmj.ac.in",
+    "email": "basketball@iiitdmj.ac.in",
     "location_text": "Not listed on the official clubs page; contact by email.",
     "hours": null
   },
   {
-    "id": "contact_club_carrom",
+    "id": "carrom@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Carrom"
@@ -357,12 +357,12 @@
     "name": "Carrom (club email)",
     "office": "Sports Council, Gymkhana",
     "phone": null,
-    "email": "carromclub@iiitdmj.ac.in",
+    "email": "carrom@iiitdmj.ac.in",
     "location_text": "Not listed on the official clubs page; contact by email.",
     "hours": null
   },
   {
-    "id": "contact_club_chess",
+    "id": "chess@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Chess"
@@ -373,12 +373,12 @@
     "name": "Chess (club email)",
     "office": "Sports Council, Gymkhana",
     "phone": null,
-    "email": "chessclub@iiitdmj.ac.in",
+    "email": "chess@iiitdmj.ac.in",
     "location_text": "Not listed on the official clubs page; contact by email.",
     "hours": null
   },
   {
-    "id": "contact_club_cricket",
+    "id": "cricket@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Cricket"
@@ -389,12 +389,12 @@
     "name": "Cricket (club email)",
     "office": "Sports Council, Gymkhana",
     "phone": null,
-    "email": "cricketclub@iiitdmj.ac.in",
+    "email": "cricket@iiitdmj.ac.in",
     "location_text": "Not listed on the official clubs page; contact by email.",
     "hours": null
   },
   {
-    "id": "contact_club_football",
+    "id": "football@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Football"
@@ -410,7 +410,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_lawn_tennis",
+    "id": "lawntennis@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Lawn Tennis"
@@ -426,7 +426,7 @@
     "hours": null
   },
   {
-    "id": "contact_club_table_tennis",
+    "id": "tabletennis@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Table Tennis"
@@ -437,12 +437,12 @@
     "name": "Table Tennis (club email)",
     "office": "Sports Council, Gymkhana",
     "phone": null,
-    "email": "tabletennisclub@iiitdmj.ac.in",
+    "email": "tabletennis@iiitdmj.ac.in",
     "location_text": "Not listed on the official clubs page; contact by email.",
     "hours": null
   },
   {
-    "id": "contact_club_volleyball",
+    "id": "volleyball@iiitdmj.ac.in",
     "type": "contact",
     "aliases": [
       "Volleyball"
@@ -453,7 +453,7 @@
     "name": "Volleyball (club email)",
     "office": "Sports Council, Gymkhana",
     "phone": null,
-    "email": "volleyballclub@iiitdmj.ac.in",
+    "email": "volleyball@iiitdmj.ac.in",
     "location_text": "Not listed on the official clubs page; contact by email.",
     "hours": null
   }
